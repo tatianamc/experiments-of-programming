@@ -1,0 +1,45 @@
+<html>
+<head>
+	<script type="text/javascript">
+
+		 /**
+		 * Прототипное наследование пример
+		 */
+
+		var duck$ = {// "$" в этом контексте читается как "прототип": duck$ == Duck.prototype
+            name: "",
+            quack: function(){
+                return this.name +" Duck: Quack-quack!";
+            }
+        };
+
+        var donald = {
+            __proto__: duck$,
+            name: "Donald"
+        };
+
+        var daffy = {
+            __proto__: duck$,
+            name: "Daffy"
+        };
+    
+        console.log( donald.quack() ); // Donald Duck: Quack-quack!
+        console.log( daffy.quack()  ); // Daffy Duck: Quack-quack!
+        console.log( duck$.isPrototypeOf(donald) ); // true
+
+
+        /**
+        * Модификация свойства __proto__
+        */
+        var donald = Object.create(duck$, {
+            name: {value: "Donald"}
+        });
+
+        console.log( Object.getPrototypeOf(donald) === duck$ ); // true
+
+	</script>
+	</head>
+	<body>
+	
+	</body>
+	</html>

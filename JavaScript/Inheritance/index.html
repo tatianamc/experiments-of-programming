@@ -1,0 +1,53 @@
+<html>
+<head>
+	<script type="text/javascript">
+
+		/**
+		*	Exemple creation object
+		*/
+		function Product(in_name, in_description, in_height, in_isExist) {
+			this.name = (typeof in_name=='undefined')?Product.DEFAULT_NAME: in_name;
+			this.description = (typeof in_description == 'undefined')? 'Nexus 5': in_description;
+			this.height =(typeof in_height == 'undefined')? 30 : in_height;
+			this.isExist =(typeof in_isExist == 'undefined')? true: in_isExist;
+		}
+
+		//Create Methods
+		Product.prototype.rename = function(newName) {
+			this.name = newName;
+			//this is important
+			return true;
+		}
+
+		Product.prototype.setNotExist = function() {
+			this.isExist = false;
+			return true;
+		}
+
+		//Static Property
+		Product.DEFAULT_NAME = 'Def phone';
+		//Static Mehtod
+		Product.Show = function() {
+			console.log('Static method');
+		}
+
+		//Reload methods
+		Product.prototype.toString = function() {
+			return "String value";
+		}
+
+		//creation object
+		var _phone = new Product( );
+		console.log(_phone);
+		_phone.rename('Motorala');
+		console.log(_phone);
+		_phone.setNotExist();
+		Product.Show();
+		console.log(_phone);
+
+	</script>
+	</head>
+	<body>
+	
+	</body>
+	</html>

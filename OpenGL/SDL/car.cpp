@@ -1,49 +1,118 @@
 // g++ main.cpp -o cube -lSDL2 -lGL -lGLU
+#include <SDL2/SDL.h> 
+#include <GL/gl.h> 
+#include <GL/glu.h> 
+#include <math.h>
 
-#include <SDL2/SDL.h> // Библиотека SDL 2
-#include <GL/gl.h> // Библиотека OpenGL
-#include <GL/glu.h> // Библиотека GLU
-#include <SDL2/SDL_image.h> 
-
-#include <iostream> // стандартная библиотека ввода-вывода в C++
+#include <iostream> 
 
 using namespace std;
+GLuint texture[6];
 
 class Car {
 	public:
 		float x;
 		float y;
+		float speed;
+		float direction;
+		
+		void addSpeed() {
+			speed+=0.005f;
+		}
+		
+		void slowSpeed() {
+			speed-=0.005f;
+		}
+		
+		void keyLeftDown(bool isPressed) {
+			isKeydown[0] = isPressed;
+		}
+		
+		void keyRightDown(bool isPressed) {
+			isKeydown[1] = isPressed;
+		}
+		
 		
 		void draw() {
-						
+			
+			glPushMatrix();
+			
+			glTranslatef(0.3f-posX, 1.0f-posY, -7.0f);
+			glRotatef(direction,0.0f,0.0f,1.0f);
+			
+			glBindTexture(GL_TEXTURE_2D, texture[1]);			
 			glBegin(GL_QUADS);
 			glColor4f(1.0f,1.0f,1.0f,1.0f);
-			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.5f,  0.3f, 3.0f);   //левый нижний 
-			glTexCoord2f(0.0f, 0.0f); glVertex3f( 0.0f,  0.3f, 3.0f);    //левый верхний
-			glTexCoord2f(0.0f, 1.0f); glVertex3f( 0.0f,  0.0f, 3.0f);  //правый верхинй 
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.5f,  0.0f, 3.0f);		
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.25f,  0.15f, 3.0f);    
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -0.25f,  0.15f, 3.0f);    
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( -0.25f,  -0.15f, 3.0f);   
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.25f,  -0.15f, 3.0f);		
 			glEnd();
+			
+			glTranslatef(-(0.3f-posX), -(1.0f-posY), +7.0f);
+			
+			glPopMatrix();
+			
+			updatePosition();
 		}
 		
 		Car() {
 			x = 0;
 			y = 0;
+			speed = 0.0f;
+			posX = 0;
+			posY = 0;
+			direction = 0;
+			
 		}
+		
+		private:
+			float posX;
+			float posY;
+			
+			bool isKeydown[2];
+			
+			float toRad(float gradus) {
+				return (gradus*M_PI)/180.0;
+			}
+			
+			void turnLeft() {
+				direction+=180*speed;
+			}
+			
+			void turnRight() {
+				direction-=180*speed;
+			}
+			
+			void updatePosition() {
+				
+				if(isKeydown[0]){
+					turnLeft();
+				}
+				if(isKeydown[1]){
+					turnRight();
+				}
+				
+				cout<<direction;
+				cout<<" ";
+				cout<<toRad(direction) ;
+				cout<<"\n";
+				posX += speed*cos(toRad(direction));
+				posY += speed*sin(toRad(direction));
+			}
+			
 };
 
+// задаем окно для SDL
+SDL_Window *window; 
  
-SDL_Window *window; // задаем окно для SDL
- 
-const int width = 640; // ширина окна
-const int height = 480; // высота окна
+const int width = 640; 
+const int height = 480;
  
 void drawBackground();
 void LoadGLTextures();
-GLuint texture[6]; /* массив текстур */
 
 Car car;
-
-
 
 void init(){
     // Инициализация SDL
@@ -69,8 +138,6 @@ void init(){
 	LoadGLTextures();
 	glEnable( GL_TEXTURE_2D ); //включить карту текстур
 	
-	
-	
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // устанавливаем фоновый цвет на черный
     glClearDepth(1.0);
     glDepthFunc(GL_LESS);
@@ -80,27 +147,22 @@ void init(){
     glLoadIdentity();
     gluPerspective(45.0f, (float) width / (float) height, 0.1f, 100.0f); // настраиваем трехмерную перспективу
     glMatrixMode(GL_MODELVIEW); // переходим в трехмерный режим
-    
-    
-    
-    
-   // glEnable(GL_BLEND_SRC);      
+     
     glEnable(GL_ALPHA_TEST);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable (GL_BLEND);
-	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main(int argc, char *argv[]){
 	 
-	init(); // инициализация
+	init();
  
     bool running = true;
 
     while(running) { 
        
-        SDL_Event event; // события SDL
-       
+        // события SDL
+        SDL_Event event;     
         while ( SDL_PollEvent(&event) ){ // начинаем обработку событий
             switch(event.type){ // смотрим:
                 case SDL_QUIT: // если произошло событие закрытия окна, то завершаем работу программы
@@ -111,69 +173,70 @@ int main(int argc, char *argv[]){
                     switch(event.key.keysym.sym){ // смотрим какая
                         case SDLK_ESCAPE: // клавиша ESC
                             running = false; // завершаем работу программы
-                        break;
+							break;
+                        case SDLK_LEFT:
+							car.keyLeftDown(true);
+							break;
+						case SDLK_RIGHT:
+							car.keyRightDown(true);
+							break;
+						case SDLK_UP:
+							car.addSpeed();
+							break;
+						case SDLK_DOWN:
+							car.slowSpeed();
+							break;
+                    }
+                break;
+                case SDL_KEYUP:
+                    switch(event.key.keysym.sym){  
+                        
+                        case SDLK_LEFT:
+							car.keyLeftDown(false);
+							break;
+						case SDLK_RIGHT:
+							car.keyRightDown(false);
+							break;
                     }
                 break;
             } 
         }
  
-        // пока программа запущена изменяем углы поворота, тем самым вращая куб
-        drawBackground(); // рисуем сам куб с текущими углами поворота
-        
+		// Rendering
+        drawBackground(); 
+        // Рисуем машину
+        car.draw();
         // обновляем экран
         glFlush();
         SDL_GL_SwapWindow(window);
     }
  
-    SDL_Quit(); // завершаем работу SDL и выходим
+	// завершаем работу SDL и выходим
+    SDL_Quit(); 
     return 0;
 }
-//textures/track.bmp
+
 void drawBackground(){
 	
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
     
-    glTranslatef(0.0f, 0.0f, -7.0f);    // Сдвинуть вглубь экрана
-    
+    glTranslatef(0.0f, 0.0f, -7.0f);    
     glBindTexture(GL_TEXTURE_2D, texture[0]);
-    
     glBegin(GL_QUADS);
     glColor4f(1.0f,1.0f,1.0f,1.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f( 2.84f,  2.2f, 2.0f);   //левый нижний 
-	glTexCoord2f(0.0f, 0.0f); glVertex3f( -2.84f,  2.2f, 2.0f);    //левый верхний
-	glTexCoord2f(0.0f, 1.0f); glVertex3f( -2.84f,  -2.2f, 2.0f);  //правый верхинй 
-	glTexCoord2f(1.0f, 1.0f); glVertex3f( 2.84f,  -2.2f, 2.0f);
-        
+    glTexCoord2f(1.0f, 0.0f); glVertex3f( 2.84f,  2.2f, 2.0f);   
+	glTexCoord2f(0.0f, 0.0f); glVertex3f( -2.84f,  2.2f, 2.0f);   
+	glTexCoord2f(0.0f, 1.0f); glVertex3f( -2.84f,  -2.2f, 2.0f);
+	glTexCoord2f(1.0f, 1.0f); glVertex3f( 2.84f,  -2.2f, 2.0f);  
     glEnd();
-    
- 
- 
-    glBindTexture(GL_TEXTURE_2D, texture[1]);
-    car.draw();
-    
- 
     glLoadIdentity();
-    // Draw car 
-    
-  
-/*
-    glBegin(GL_QUADS);                  // Рисуем куб
-    
-    glColor3f(1.0f, 0.0f, 0.0f);        // Красная сторона (Передняя)
-    glVertex3f( 1.0f,  1.0f, 1.0f);     // Верхний правый угол квадрата
-    glVertex3f(-1.0f,  1.0f, 1.0f);     // Верхний левый
-    glVertex3f(-1.0f, -1.0f, 1.0f);     // Нижний левый
-    glVertex3f( 1.0f, -1.0f, 1.0f);     // Нижний правый
- 
-    glEnd();                            // Закончили квадраты    
- */
 }
 
 void LoadGLTextures( ) {
-    SDL_Surface *TextureImage; //создать указатель для текстуры
+	//создать указатель для текстуры
+    SDL_Surface *TextureImage; 
 
-    /* Загрузка bmp изображения и выход в случае ошибки*/
     if (( TextureImage = SDL_LoadBMP( "textures/track.bmp" ))) {
 	    glGenTextures( 1, &texture[0] ); //создать текстуру
 	    glBindTexture( GL_TEXTURE_2D, texture[0] ); //генирация типа и данных для текстуры
@@ -182,17 +245,13 @@ void LoadGLTextures( ) {
 	    /* линейный фильтор */
 	    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-     }
+     } 
     // исвободить память 
     if ( TextureImage )
 	    SDL_FreeSurface( TextureImage );  
 	    
-	 SDL_Surface *TextureImage1;   
-	 /* Загрузка bmp изображения и выход в случае ошибки*/
+	SDL_Surface *TextureImage1;   
     if (( TextureImage1 = SDL_LoadBMP( "textures/car.bmp" ))) {
-		
-		
-
 		glGenTextures( 1, &texture[1] ); //создать текстуру
 	    glBindTexture( GL_TEXTURE_2D, texture[1] ); //генирация типа и данных для текстуры
 	    /* сгенерировать текстуры */

@@ -17,43 +17,45 @@ class Car {
 		float speed;
 		float direction;
 		
+		
 		void addSpeed() {
-			speed+=0.005f;
+			speed+=speedStep;
 		}
 		
+		
 		void slowSpeed() {
-			speed-=0.005f;
+			speed-=speedStep;
 		}
+		
 		
 		void keyLeftDown(bool isPressed) {
 			isKeydown[0] = isPressed;
 		}
 		
+		
 		void keyRightDown(bool isPressed) {
 			isKeydown[1] = isPressed;
 		}
-		
 		
 		void draw() {
 			
 			glPushMatrix();
 			
-			glTranslatef(posX, posY, -7.0f);
+			glTranslatef(posX, posY, -defoultZ);
 			glRotatef(direction,0.0f,0.0f,1.0f);
-			
 			glBindTexture(GL_TEXTURE_2D, texture[1]);			
+			
 			glBegin(GL_QUADS);
 			glColor4f(1.0f,1.0f,1.0f,1.0f);
-			glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.25f,  0.15f, z);    
-			glTexCoord2f(0.0f, 0.0f); glVertex3f( -0.25f,  0.15f, z);    
-			glTexCoord2f(0.0f, 1.0f); glVertex3f( -0.25f,  -0.15f, z);   
-			glTexCoord2f(1.0f, 1.0f); glVertex3f( 0.25f,  -0.15f, z);		
+			glTexCoord2f(1.0f, 0.0f); glVertex3f( carHalfWidth,  carHalfHeigh, z);    
+			glTexCoord2f(0.0f, 0.0f); glVertex3f( -carHalfWidth,  carHalfHeigh, z);    
+			glTexCoord2f(0.0f, 1.0f); glVertex3f( -carHalfWidth,  -carHalfHeigh, z);   
+			glTexCoord2f(1.0f, 1.0f); glVertex3f( carHalfWidth,  -carHalfHeigh, z);		
 			glEnd();
 			
-			glTranslatef(-(0.3f-posX), -(1.0f-posY), +7.0f);
+			glTranslatef(-posX, -posY, defoultZ);
 			
 			glPopMatrix();
-			
 			updatePosition();
 		}
 		
@@ -66,9 +68,18 @@ class Car {
 			posY = 1.0f;
 			direction = 0;
 			
-		}
+			speedStep = 0.005f;
+			defoultZ = 7;
+			
+			carHalfWidth = 0.25f;
+			carHalfHeigh = 0.15f;
+		} 
 		
 		private:
+			float speedStep;
+			float carHalfWidth;
+			float carHalfHeigh;
+			float defoultZ;
 			float posX;
 			float posY;
 			
@@ -100,19 +111,20 @@ class Car {
 				setH();
 			}
 			
+			// Update position car by Z
 			void setH() {
-				//0.03
+
+				// Square right entrence		
 				bool rt = (-1.5<posX&&posX<-0.775)&&(1.1<posY&&posY<1.8);
+				// Square left entrence	
 				bool rd = (-2.43<posX&&posX<-1.59)&&(-1.59<posY&&posY<0.62);
-				bool md = (-2.43<posX&&posX<-0.775)&&(0.4<posY&&posY<1.2);
+				// Check, if car on bridge
+				bool md = (-2.43<posX&&posX<-0.775)&&(0.35<posY&&posY<1.2);
 				
 				if((rt||rd)&&(!md)) {
 					z = 2.003;
 				} else {
-				
-					if(md) {
-						 
-					} else {
+					if(!md) {
 						z = 2.001;
 					}
 				}
@@ -255,10 +267,14 @@ void drawBackground(){
     glColor4f(1.0f,1.0f,1.0f,1.0f);
     
     
+    // Draw Bridgge
+    // Точки вычисляются исходя из пропорций экрана, и размеров объекта
+    // на экране
+    
     glTexCoord2f(1.0f, 0.0f); 
     glVertex3f(0.568f,  0.582f, 2.002f);
     
-    glTexCoord2f(0.78f, 0.0f); 
+    glTexCoord2f(0.8f, 0.0f); 
     glVertex3f(0.3f,  0.582f, 2.002f);
     
     glTexCoord2f(0.0f, 1.0f); 
@@ -267,7 +283,7 @@ void drawBackground(){
     glTexCoord2f(0.5f, 1.0f); 
     glVertex3f(0.0f,  -0.582f, 2.002f);
     
-    glTexCoord2f(0.35f, 1.0f); 
+    glTexCoord2f(0.5f, 1.0f); 
     glVertex3f(0.568f,  0.1f, 2.002f);
     
     glEnd();
@@ -290,6 +306,7 @@ GLuint loadTextureFromBMP24(std::string path) {
 	    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
      } 
+     
     // исвободить память 
     if ( TextureImage )
 	    SDL_FreeSurface( TextureImage );  

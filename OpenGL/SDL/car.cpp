@@ -11,12 +11,6 @@ GLuint texture[6];
 
 class Car {
 	public:
-		float x;
-		float y;
-		float z;
-		float speed;
-		float direction;
-		
 		
 		void addSpeed() {
 			speed+=speedStep;
@@ -76,6 +70,12 @@ class Car {
 		} 
 		
 		private:
+			float x;
+			float y;
+			float z;
+			float speed;
+			float direction;
+		
 			float speedStep;
 			float carHalfWidth;
 			float carHalfHeigh;

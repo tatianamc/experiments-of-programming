@@ -17,6 +17,8 @@ public class HelloTemplate {
         Configuration configuration = new Configuration();
         configuration.setClassForTemplateLoading(HelloTemplate.class,"/");
 
+
+
         try {
             Template template = configuration.getTemplate("hello.ftl");
             StringWriter writer = new StringWriter();

@@ -26,31 +26,54 @@ public class RunServer {
         BufferedReader in2 = new BufferedReader(new InputStreamReader(clientTwo.getInputStream()));
         PrintWriter out2 = new PrintWriter(clientTwo.getOutputStream(), true);
 
-        Client clientOneHandler = new Client(out1,in2);
-        Client clientTwoHandler = new Client(out2,in1);
+        GameContext context = new GameContext();
+        Client clientOneHandler = new Client(1,out1, out2, in2, context);
+        Client clientTwoHandler = new Client(2,out2, out1, in1, context);
+
         clientOneHandler.start();
         clientTwoHandler.start();
 
         try {
             clientOneHandler.join();
             clientTwoHandler.join();
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+}
 
+class GameContext {
+    private int activeUser = 1;
 
+    public int getActiveUser() {
+        return activeUser;
+    }
+
+    public void setActiveUser(int activeUser) {
+        this.activeUser = activeUser;
+    }
+
+    public void complete() {
+        if(activeUser==1)
+            activeUser = 2;
+        else activeUser = 1;
     }
 }
 
 class Client extends Thread{
 
     private BufferedReader in;
+    private PrintWriter outOther;
     private PrintWriter out;
+    private GameContext context;
+    private int id;
 
-    public Client(PrintWriter out, BufferedReader in) {
+    public Client(int id, PrintWriter outOther, PrintWriter out, BufferedReader in, GameContext context) {
+        this.id = id;
         this.in = in;
+        this.outOther = outOther;
         this.out = out;
+        this.context = context;
     }
 
     @Override
@@ -58,14 +81,18 @@ class Client extends Thread{
 
         while (true) {
             try {
-
                 String string = in.readLine();
-                out.println(string);
+                if(context.getActiveUser()==id) {
+                    outOther.println(string);
+                    context.complete();
+                } else {
+                    out.println("Wait your course");
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
+
 }

@@ -1,5 +1,7 @@
 package client;
 
+import com.sun.org.omg.CORBA.InitializerHelper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,134 +9,75 @@ import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
+import java.util.TreeMap;
 
 
 public class ClientRun {
     public static void main(String[] args) throws IOException {
         InetAddress address = Inet4Address.getLocalHost();
 
-        Socket serverSocket = new Socket(address,9192);
-
-        ClientChecker clientChecker = new ClientChecker(serverSocket);
-        ClientSender clientSender = new ClientSender(serverSocket);
+        Socket serverSocket = new Socket(address, 9192);
 
 
-        clientChecker.start();
-        clientSender.start();
+        BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+        PrintWriter out = new PrintWriter(serverSocket.getOutputStream(), true);
+
+        InHandler inHandler = new InHandler(in);
+        OutHandler outHandler = new OutHandler(out);
+
+        inHandler.start();
+        outHandler.start();
 
         try {
-            clientChecker.join();
-            clientChecker.join();
+            inHandler.join();
+            outHandler.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-       /* ClientWorker worker = new ClientWorker(serverSocket);
-
-        worker.run();
-
-        try {
-            worker.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-
     }
 }
 
-class ClientChecker extends Thread {
-    private Socket serverSocket;
-    private PrintWriter out;
+class InHandler extends Thread{
+
     private BufferedReader in;
 
-    public ClientChecker(Socket serverSocket) throws IOException {
-        this.serverSocket = serverSocket;
-
-        out = new PrintWriter(serverSocket.getOutputStream(), true);
-        in = new BufferedReader(
-                new InputStreamReader(serverSocket.getInputStream()));
+    public InHandler(BufferedReader in) {
+        this.in = in;
     }
 
     @Override
     public void run() {
 
-        try {
-            while (true) {
-                System.out.println(in.readLine());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-class ClientSender extends Thread {
-
-    private Socket serverSocket;
-    private PrintWriter out;
-    private BufferedReader in;
-
-    public ClientSender(Socket serverSocket) throws IOException {
-        this.serverSocket = serverSocket;
-
-        out = new PrintWriter(this.serverSocket.getOutputStream(), true);
-        in = new BufferedReader(
-                new InputStreamReader(serverSocket.getInputStream()));
-    }
-
-
-
-    @Override
-    public void run() {
-
-        boolean stillAlive = true;
-        int i=0;
-        while (stillAlive) {
-
+        while (true) {
             try {
-                out.println("Action on client " + i++);
-                Thread.sleep(1000);
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-}
-
-class ClientWorker extends Thread {
-
-    private Socket serverSocket;
-    private PrintWriter out;
-    private BufferedReader in;
-
-    public ClientWorker(Socket serverSocket) throws IOException {
-        this.serverSocket = serverSocket;
-
-        out = new PrintWriter(this.serverSocket.getOutputStream(), true);
-        in = new BufferedReader(
-                new InputStreamReader(serverSocket.getInputStream()));
-    }
-
-
-
-    @Override
-    public void run() {
-
-        boolean stillAlive = true;
-        while (stillAlive) {
-
-            try {
-                out.println("Hi, Dear server, what time is it now? ");
                 System.out.println(in.readLine());
-                Thread.sleep(1000);
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+
+    }
+}
+
+class OutHandler extends Thread {
+
+    private PrintWriter out;
+
+    public OutHandler(PrintWriter out) {
+        this.out = out;
+    }
+
+    @Override
+    public void run() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            String text = scanner.nextLine();
+            out.println(text);
         }
     }
 }

@@ -20,13 +20,16 @@ public class RunServer {
         Socket clientTwo = serverSocket.accept();
         System.out.println("Client two connected");
 
+        GameContext context = new GameContext();
+
         BufferedReader in1 = new BufferedReader(new InputStreamReader(clientOne.getInputStream()));
         PrintWriter out1 = new PrintWriter(clientOne.getOutputStream(), true);
+        out1.println("You are second, wait ...");
 
         BufferedReader in2 = new BufferedReader(new InputStreamReader(clientTwo.getInputStream()));
         PrintWriter out2 = new PrintWriter(clientTwo.getOutputStream(), true);
+        out2.println("You are first, enter any word start with '"+context.getActiveChar()+"'");
 
-        GameContext context = new GameContext();
         Client clientOneHandler = new Client(1,out1, out2, in2, context);
         Client clientTwoHandler = new Client(2,out2, out1, in1, context);
 
@@ -42,57 +45,3 @@ public class RunServer {
     }
 }
 
-class GameContext {
-    private int activeUser = 1;
-
-    public int getActiveUser() {
-        return activeUser;
-    }
-
-    public void setActiveUser(int activeUser) {
-        this.activeUser = activeUser;
-    }
-
-    public void complete() {
-        if(activeUser==1)
-            activeUser = 2;
-        else activeUser = 1;
-    }
-}
-
-class Client extends Thread{
-
-    private BufferedReader in;
-    private PrintWriter outOther;
-    private PrintWriter out;
-    private GameContext context;
-    private int id;
-
-    public Client(int id, PrintWriter outOther, PrintWriter out, BufferedReader in, GameContext context) {
-        this.id = id;
-        this.in = in;
-        this.outOther = outOther;
-        this.out = out;
-        this.context = context;
-    }
-
-    @Override
-    public void run() {
-
-        while (true) {
-            try {
-                String string = in.readLine();
-                if(context.getActiveUser()==id) {
-                    outOther.println(string);
-                    context.complete();
-                } else {
-                    out.println("Wait your course");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-}

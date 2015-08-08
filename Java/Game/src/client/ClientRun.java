@@ -12,14 +12,12 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-
 public class ClientRun {
 
     public static void main(String[] args) throws IOException {
         InetAddress address = Inet4Address.getLocalHost();
 
         Socket serverSocket = new Socket(address, 9192);
-
 
         BufferedReader in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
         PrintWriter out = new PrintWriter(serverSocket.getOutputStream(), true);

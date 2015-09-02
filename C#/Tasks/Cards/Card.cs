@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Cards
 {
-	class Card
+	public class Card
 	{
 		public Color Color { get; set; }
 		public Point LeftUp { get; set; }

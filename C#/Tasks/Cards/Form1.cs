@@ -24,33 +24,74 @@ namespace Cards
 			
 		}
 
+		List<Place> places;
 		private void button1_Click( object sender, EventArgs e )
 		{
-			Random r = new Random();
-			
+			places = new List<Place>();
+
 			for (int i = 0; i < 7; i++)
 			{
+				Place p = new Place(new Point((i + 1) * 70, 60), 60, 80);
+				p.ClickEvent += c_ClickEvent;
+				places.Add(p);
+			}
+
+			for (int i = 0; i < 7; i++)
+			{
+				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80);
+				p.ClickEvent += c_ClickEvent;
+				places.Add(p);
+			}
+
+
+
+			
+			Random r = new Random();
+			
+			for (int i = 0; i < 6; i++)
+			{
 				Card c = new Card(Color.FromArgb(r.Next(255), r.Next(255), r.Next(255)));
-				c.LeftUp = new Point((i + 1) * 40, 20);
-				c.Width = 30;
-				c.Height = 50;
-				cards.Add(c);
-				c.ClickEvent += c_ClickEvent;
+				places[i * 2].Card = c;
 			}
 
 			repaint();
 		}
 
-		void c_ClickEvent( Card obj )
-		{
-			if (active == obj)
-			{
-				active = null;
 
-			} else
-			{
-				active = obj;
+		Place activePlace;
+
+		void c_ClickEvent( Place obj )
+		{
+			if(activePlace!=null) {
+
+				if (activePlace == obj)
+				{
+					obj.IsSelected = false;
+					activePlace = null;
+				} else
+				{
+					if (obj.Card == null)
+					{
+						obj.Card = activePlace.Card;
+						activePlace.Card = null;
+						activePlace.IsSelected = false;
+						activePlace = null;
+					} else
+					{
+						MessageBox.Show("Эй, там же карта лежит!");
+					}
+				}
+
+			} else {
+
+				if (obj.Card != null)
+				{
+					activePlace = obj;
+					activePlace.IsSelected = true;
+				}
+
 			}
+
 		}
 
 
@@ -60,19 +101,14 @@ namespace Cards
 		{
 			Graphics g = panel1.CreateGraphics();
 			g.Clear(panel1.BackColor);
-			
-			cards.ForEach(x=> g.FillRectangle(new SolidBrush(x.Color),x.LeftUp.X,x.LeftUp.Y, x.Width, x.Height));
-			if (active != null)
-			{
-				g.FillRectangle(new SolidBrush(Color.White), active.LeftUp.X, active.LeftUp.Y, active.Width, active.Height);
-			}
+			places.ForEach(x => x.Draw(g));
 		}
 
 		List<Card> cards = new List<Card>();
 
 		private void panel1_MouseClick( object sender, MouseEventArgs e )
 		{
-			cards.ForEach(x => x.Click(e.Location));
+			places.ForEach(x => x.Click(e.Location));
 			repaint();
 		}
 	}

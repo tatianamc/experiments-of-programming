@@ -31,14 +31,14 @@ namespace Cards
 
 			for (int i = 0; i < 7; i++)
 			{
-				Place p = new Place(new Point((i + 1) * 70, 60), 60, 80);
+				Place p = new Place(new Point((i + 1) * 70, 60), 60, 80, i);
 				p.ClickEvent += c_ClickEvent;
 				places.Add(p);
 			}
 
 			for (int i = 0; i < 7; i++)
 			{
-				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80);
+				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80, 6+i);
 				p.ClickEvent += c_ClickEvent;
 				places.Add(p);
 			}
@@ -71,9 +71,16 @@ namespace Cards
 					if (obj.Card == null)
 					{
 						obj.Card = activePlace.Card;
+
+						if (network != null)
+						{
+							lb_answer.Text = network.Send(String.Format("Card moved from place {0} to {1}", activePlace.Id, obj.Id));
+						}
+
 						activePlace.Card = null;
 						activePlace.IsSelected = false;
 						activePlace = null;
+
 					} else
 					{
 						MessageBox.Show("Эй, там же карта лежит!");

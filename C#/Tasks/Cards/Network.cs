@@ -36,15 +36,19 @@ namespace Cards
 			}
 		}
 
-		public void Send(String message)
+		public String Send(String message)
 		{
 			if (socket != null)
 			{
-				byte[] data = System.Text.Encoding.UTF8.GetBytes (message);
+				byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
 				socket.Send(data);
 				byte[] answer = new byte[1024];
 				socket.Receive(answer);
 
+				return Encoding.UTF8.GetString(answer);
+			} else
+			{
+				return "No connected";
 			}
 		}
 

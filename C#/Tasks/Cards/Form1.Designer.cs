@@ -37,12 +37,14 @@
 			this.btn_connect = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.lb_status = new System.Windows.Forms.Label();
+			this.lb_answer = new System.Windows.Forms.Label();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panel1
 			// 
 			this.panel1.BackColor = System.Drawing.SystemColors.ButtonShadow;
+			this.panel1.Controls.Add(this.lb_answer);
 			this.panel1.Controls.Add(this.lb_status);
 			this.panel1.Controls.Add(this.label1);
 			this.panel1.Controls.Add(this.btn_connect);
@@ -131,6 +133,15 @@
 			this.lb_status.TabIndex = 6;
 			this.lb_status.Text = "Нет соединения";
 			// 
+			// lb_answer
+			// 
+			this.lb_answer.AutoSize = true;
+			this.lb_answer.Location = new System.Drawing.Point(503, 23);
+			this.lb_answer.Name = "lb_answer";
+			this.lb_answer.Size = new System.Drawing.Size(63, 13);
+			this.lb_answer.TabIndex = 7;
+			this.lb_answer.Text = "Ответа нет";
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -156,6 +167,7 @@
 		private System.Windows.Forms.Label lb_status;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btn_connect;
+		private System.Windows.Forms.Label lb_answer;
 	}
 }
 

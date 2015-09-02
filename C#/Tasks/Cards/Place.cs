@@ -15,17 +15,19 @@ namespace Cards
 
 		public Card Card { get; set; }
 		public bool IsSelected { get; set; }
+		public int Id { get; private set; }
 
 		public Point LeftUp { get; set; }
 		public int Width { get; set; }
 		public int Height { get; set; }
 
-		public Place( Point position, int width, int height )
+		public Place( Point position, int width, int height, int id )
 		{
 			LeftUp = position;
 			Width = width;
 			Height = height;
 			IsSelected = false;
+			Id = id;
 		}
 
 		public void Draw(Graphics g)

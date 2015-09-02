@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
 
 namespace Cards
 {
@@ -21,7 +22,6 @@ namespace Cards
 		{
 			Color c = Color.Green;
 			Color b = Color.Black;
-			
 		}
 
 		List<Place> places;
@@ -44,8 +44,6 @@ namespace Cards
 			}
 
 
-
-			
 			Random r = new Random();
 			
 			for (int i = 0; i < 6; i++)
@@ -110,6 +108,20 @@ namespace Cards
 		{
 			places.ForEach(x => x.Click(e.Location));
 			repaint();
+		}
+
+		Network network;
+		private void btn_connect_Click( object sender, EventArgs e )
+		{
+			network = new Network( IPAddress.Parse(tb_ip.Text), int.Parse(tb_port.Text));
+			try
+			{
+				network.Connect();
+			} catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message);
+			}
+			lb_status.Text = network.Status;
 		}
 	}
 }

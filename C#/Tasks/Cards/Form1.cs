@@ -66,7 +66,7 @@ namespace Cards
 
 						if (network != null)
 						{
-							lb_answer.Text = network.Send(String.Format("Card moved from place {0} to {1}", activePlace.Id, obj.Id));
+							network.Send(String.Format("Card moved from place {0} to {1}", activePlace.Id, obj.Id));
 						}
 
 						activePlace.Card = null;
@@ -113,11 +113,13 @@ namespace Cards
 		private void btn_connect_Click( object sender, EventArgs e )
 		{
 			network = new Network( IPAddress.Parse(tb_ip.Text), int.Parse(tb_port.Text));
+			network.ServerActionEvent += network_ServerActionEvent;
+
 			try
 			{
 				network.Connect();
 
-				CardInfo[] cinf = network.GetCards();
+				CardInfo[] cinf = network.GetCardsAndStartListening();
 				for (int i = 0; i < cinf.Length; i++)
 				{
 					if (cinf[i] != null)
@@ -134,5 +136,23 @@ namespace Cards
 			}
 			lb_status.Text = network.Status;
 		}
+
+		void network_ServerActionEvent( string arg1, string arg2 )
+		{
+			
+			if(arg1.Equals("move")) {
+				String[] par = arg2.Split('>');
+				if (par.Length > 2)
+				{
+					int from = int.Parse(par[0]);
+					int to = int.Parse(par[2]);
+
+					places[to].Card = places[from].Card;
+					repaint();
+				}
+			}
+
+		}
+
 	}
 }

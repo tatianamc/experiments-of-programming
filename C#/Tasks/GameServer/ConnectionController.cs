@@ -41,17 +41,13 @@ namespace GameServer
 				Console.ResetColor();
 
 				Client client = new Client("Client " + counter++, socket);
-				
 
-				// Send to client game context
-				NetworkStream stream = new NetworkStream(client.Socket);
 				BinaryFormatter bf = new BinaryFormatter();
-				bf.Serialize(stream, context.Cards);
+				bf.Serialize(client.stream, context.Cards);
 
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("successful", socket.LocalEndPoint);
 				Console.ResetColor();
-				
 
 				clients.Add(client);
 				ThreadPool.QueueUserWorkItem( client.RunProcessing );

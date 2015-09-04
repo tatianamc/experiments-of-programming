@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
 using GameDomain;
+using System.Threading;
 
 namespace Cards
 {
@@ -15,6 +16,8 @@ namespace Cards
 		private IPAddress ip;
 		private int port;
 		Socket socket;
+
+		private Thread serverActionThread;
 
 		public Network( IPAddress ip, int port )
 		{
@@ -38,27 +41,66 @@ namespace Cards
 			}
 		}
 
-		public String Send(String message)
+		public void Send(String message)
 		{
 			if (socket != null)
 			{
-				byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
+				/*byte[] data = System.Text.Encoding.UTF8.GetBytes(message);
 				socket.Send(data);
 				byte[] answer = new byte[1024];
 				socket.Receive(answer);
 
-				return Encoding.UTF8.GetString(answer);
-			} else
-			{
-				return "No connected";
-			}
+				return Encoding.UTF8.GetString(answer);*/
+				NetworkStream stream = new NetworkStream(socket);
+				BinaryFormatter bf = new BinaryFormatter();
+				bf.Serialize(stream,new Message(message));
+			} 
 		}
 
-		public CardInfo[] GetCards()
+		public event Action<String, String> ServerActionEvent;
+
+
+		private void ServerListener()
+		{
+			//// TODO add end of listening
+			//while (true)
+			//{
+			//	// TODO receive any length messages
+			//	byte[] data = new byte[1024];
+			//	int bytesCount  = socket.Receive(data);
+				
+			//	// answer 
+			//	socket.Send(Encoding.UTF8.GetBytes("{status: OK}"));
+
+			//	// parse answer
+			//	String msg = Encoding.UTF8.GetString(data, 0, bytesCount);
+
+			//	String[] request = msg.Split(new char[] { ':' }, 2);
+			//	if(request.Length > 1) {
+			//		if(request[0].Trim().Equals("move")) {
+			//			if (ServerActionEvent != null)
+			//			{
+			//				ServerActionEvent(request[0].Trim(), request[1].Trim());
+			//			}
+			//		}
+			//	}
+
+
+			//}
+		}
+
+		public CardInfo[] GetCardsAndStartListening()
 		{
 			NetworkStream stream = new NetworkStream(socket);
 			BinaryFormatter bf = new BinaryFormatter();
-			return (CardInfo[])bf.Deserialize(stream);
+
+			CardInfo[] cards = (CardInfo[])bf.Deserialize(stream);
+
+			// run parallel
+			serverActionThread = new Thread(ServerListener);
+			serverActionThread.Start();
+
+			return cards;
 		}
 
 		public void Connect() {

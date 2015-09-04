@@ -4,39 +4,51 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using GameDomain;
+using System.Threading;
 
 namespace GameServer
 {
 	public class Client
 	{
-		public Socket Socket { get; private set; }
+		private Socket socket;
+		public NetworkStream stream;
+		
 		public String Name { get; set; }
 
-		public Client( String name, Socket socket )
+		public Client( String name, Socket socket)
 		{
 			Name = name;
-			Socket = socket;
+			this.socket = socket;
+			this.stream = new NetworkStream(socket,true);
+		}
+
+		public void SendEventToClient(Message msg)
+		{
+			BinaryFormatter bf = new BinaryFormatter();
+			bf.Serialize(stream, msg);
 		}
 
 		public void RunProcessing(Object state)
 		{
 			bool isError = false;
-			while(Socket.Connected&&!isError) {
-
+			while( !isError) {
+				
 				// TODO будет ошибка если 
 				byte[] data = new byte[1024];
 
 				try
 				{
-					int bytesCount = Socket.Receive(data);
-					String msg = Encoding.UTF8.GetString(data,0,bytesCount);
+					BinaryFormatter bf = new BinaryFormatter();
+
+					Message msg = (Message)bf.Deserialize(stream);
 
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine(">>>"+Name + " " + msg + "<<<");
+					Console.WriteLine(">>>"+Name + " " + msg.Action + "<<<");
 					Console.ResetColor();
+					Thread.Sleep(4000);
 				
-					Socket.Send( Encoding.UTF8.GetBytes("{status: OK}") );
-
 				} catch (Exception)
 				{
 					isError = true;
@@ -47,9 +59,10 @@ namespace GameServer
 				}
 			}
 
-			Socket.Shutdown(SocketShutdown.Both);
-			Socket.Close();
+			stream.Close();
+		
 		}
+
 
 	}
 }

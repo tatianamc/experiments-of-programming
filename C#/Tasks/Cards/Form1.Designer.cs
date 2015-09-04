@@ -35,7 +35,6 @@
 			this.btn_connect = new System.Windows.Forms.Button();
 			this.tb_port = new System.Windows.Forms.TextBox();
 			this.tb_ip = new System.Windows.Forms.TextBox();
-			this.button1 = new System.Windows.Forms.Button();
 			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -48,7 +47,6 @@
 			this.panel1.Controls.Add(this.btn_connect);
 			this.panel1.Controls.Add(this.tb_port);
 			this.panel1.Controls.Add(this.tb_ip);
-			this.panel1.Controls.Add(this.button1);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
@@ -60,7 +58,7 @@
 			// lb_answer
 			// 
 			this.lb_answer.AutoSize = true;
-			this.lb_answer.Location = new System.Drawing.Point(503, 23);
+			this.lb_answer.Location = new System.Drawing.Point(348, 28);
 			this.lb_answer.Name = "lb_answer";
 			this.lb_answer.Size = new System.Drawing.Size(63, 13);
 			this.lb_answer.TabIndex = 7;
@@ -69,7 +67,7 @@
 			// lb_status
 			// 
 			this.lb_status.AutoSize = true;
-			this.lb_status.Location = new System.Drawing.Point(524, 10);
+			this.lb_status.Location = new System.Drawing.Point(369, 15);
 			this.lb_status.Name = "lb_status";
 			this.lb_status.Size = new System.Drawing.Size(89, 13);
 			this.lb_status.TabIndex = 6;
@@ -78,7 +76,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(410, 10);
+			this.label1.Location = new System.Drawing.Point(255, 15);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(110, 13);
 			this.label1.TabIndex = 5;
@@ -86,7 +84,7 @@
 			// 
 			// btn_connect
 			// 
-			this.btn_connect.Location = new System.Drawing.Point(337, 3);
+			this.btn_connect.Location = new System.Drawing.Point(182, 8);
 			this.btn_connect.Name = "btn_connect";
 			this.btn_connect.Size = new System.Drawing.Size(67, 23);
 			this.btn_connect.TabIndex = 4;
@@ -96,7 +94,7 @@
 			// 
 			// tb_port
 			// 
-			this.tb_port.Location = new System.Drawing.Point(271, 3);
+			this.tb_port.Location = new System.Drawing.Point(116, 8);
 			this.tb_port.Name = "tb_port";
 			this.tb_port.Size = new System.Drawing.Size(59, 20);
 			this.tb_port.TabIndex = 3;
@@ -104,21 +102,11 @@
 			// 
 			// tb_ip
 			// 
-			this.tb_ip.Location = new System.Drawing.Point(165, 3);
+			this.tb_ip.Location = new System.Drawing.Point(10, 8);
 			this.tb_ip.Name = "tb_ip";
 			this.tb_ip.Size = new System.Drawing.Size(100, 20);
 			this.tb_ip.TabIndex = 2;
 			this.tb_ip.Text = "127.0.0.1";
-			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(3, 3);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(61, 23);
-			this.button1.TabIndex = 1;
-			this.button1.Text = "Run";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
 			// 
 			// Form1
 			// 
@@ -137,7 +125,6 @@
 		#endregion
 
 		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.TextBox tb_port;
 		private System.Windows.Forms.TextBox tb_ip;
 		private System.Windows.Forms.Label lb_status;

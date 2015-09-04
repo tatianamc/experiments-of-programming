@@ -43,7 +43,7 @@ namespace GameServer
 				Client client = new Client("Client " + counter++, socket);
 
 				BinaryFormatter bf = new BinaryFormatter();
-				bf.Serialize(client.stream, context.Cards);
+				bf.Serialize(client.stream, new GameDomain.Message("data", context.Cards));
 
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("successful", socket.LocalEndPoint);

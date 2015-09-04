@@ -10,10 +10,13 @@ namespace GameDomain
 	public class Message
 	{
 		public String Action { get; set; }
-
-		public Message( String action )
+		public Object Data { get; set; }
+		
+		public Message( String action , Object data)
 		{
 			Action = action;
+			Data = data;
 		}
+
 	}
 }

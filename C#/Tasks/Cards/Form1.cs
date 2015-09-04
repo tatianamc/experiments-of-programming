@@ -26,26 +26,6 @@ namespace Cards
 		}
 
 		List<Place> places;
-		private void button1_Click( object sender, EventArgs e )
-		{
-			places = new List<Place>();
-
-			for (int i = 0; i < 7; i++)
-			{
-				Place p = new Place(new Point((i + 1) * 70, 60), 60, 80, i);
-				p.ClickEvent += c_ClickEvent;
-				places.Add(p);
-			}
-
-			for (int i = 0; i < 7; i++)
-			{
-				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80, 7+i);
-				p.ClickEvent += c_ClickEvent;
-				places.Add(p);
-			}
-
-			repaint();
-		}
 
 
 		Place activePlace;
@@ -105,8 +85,11 @@ namespace Cards
 
 		private void panel1_MouseClick( object sender, MouseEventArgs e )
 		{
-			places.ForEach(x => x.Click(e.Location));
-			repaint();
+			if (places != null)
+			{
+				places.ForEach(x => x.Click(e.Location));
+				repaint();
+			}
 		}
 
 		Network network;
@@ -117,18 +100,8 @@ namespace Cards
 
 			try
 			{
+				DrawPlaces();
 				network.Connect();
-
-				CardInfo[] cinf = network.GetCardsAndStartListening();
-				for (int i = 0; i < cinf.Length; i++)
-				{
-					if (cinf[i] != null)
-					{
-						places[i].Card = new Card(cinf[i].Color);
-					}
-				}
-
-				repaint();
 
 			} catch (Exception ex)
 			{
@@ -137,22 +110,55 @@ namespace Cards
 			lb_status.Text = network.Status;
 		}
 
-		void network_ServerActionEvent( string arg1, string arg2 )
+		private void DrawPlaces()
 		{
-			
-			if(arg1.Equals("move")) {
-				String[] par = arg2.Split('>');
-				if (par.Length > 2)
-				{
-					int from = int.Parse(par[0]);
-					int to = int.Parse(par[2]);
+			places = new List<Place>();
 
-					places[to].Card = places[from].Card;
-					repaint();
-				}
+			for (int i = 0; i < 7; i++)
+			{
+				Place p = new Place(new Point((i + 1) * 70, 60), 60, 80, i);
+				p.ClickEvent += c_ClickEvent;
+				places.Add(p);
 			}
 
+			for (int i = 0; i < 7; i++)
+			{
+				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80, 7 + i);
+				p.ClickEvent += c_ClickEvent;
+				places.Add(p);
+			}
 		}
+
+		void network_ServerActionEvent( GameDomain.Message obj )
+		{
+			switch (obj.Action)
+			{
+				case "data":
+
+
+					CardInfo[] cinf = obj.Data as CardInfo[];
+					if (cinf == null)
+					{
+						throw new Exception("No valid data");
+					}
+
+					for (int i = 0; i < cinf.Length; i++)
+					{
+						if (cinf[i] != null)
+						{
+							places[i].Card = new Card(cinf[i].Color);
+						}
+					}
+
+			
+					break;
+				case "move":
+					break;
+			}
+
+			repaint();
+		}
+
 
 	}
 }

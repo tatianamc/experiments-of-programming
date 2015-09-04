@@ -42,12 +42,15 @@ namespace GameServer
 				{
 					BinaryFormatter bf = new BinaryFormatter();
 
-					Message msg = (Message)bf.Deserialize(stream);
+					
 
-					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine(">>>"+Name + " " + msg.Action + "<<<");
-					Console.ResetColor();
-					Thread.Sleep(4000);
+					Message msg = (Message)bf.Deserialize(stream);
+					if (msg.Data is String)
+					{	
+						Console.ForegroundColor = ConsoleColor.Yellow;
+						Console.WriteLine(">>>" + Name + " " + msg.Action+":"+ msg.Data + "<<<");
+						Console.ResetColor();
+					}
 				
 				} catch (Exception)
 				{

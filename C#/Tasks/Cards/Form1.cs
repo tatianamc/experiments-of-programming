@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
+using GameDomain;
 
 namespace Cards
 {
@@ -38,18 +39,9 @@ namespace Cards
 
 			for (int i = 0; i < 7; i++)
 			{
-				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80, 6+i);
+				Place p = new Place(new Point((i + 1) * 70, 300), 60, 80, 7+i);
 				p.ClickEvent += c_ClickEvent;
 				places.Add(p);
-			}
-
-
-			Random r = new Random();
-			
-			for (int i = 0; i < 6; i++)
-			{
-				Card c = new Card(Color.FromArgb(r.Next(255), r.Next(255), r.Next(255)));
-				places[i * 2].Card = c;
 			}
 
 			repaint();
@@ -124,6 +116,18 @@ namespace Cards
 			try
 			{
 				network.Connect();
+
+				CardInfo[] cinf = network.GetCards();
+				for (int i = 0; i < cinf.Length; i++)
+				{
+					if (cinf[i] != null)
+					{
+						places[i].Card = new Card(cinf[i].Color);
+					}
+				}
+
+				repaint();
+
 			} catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message);

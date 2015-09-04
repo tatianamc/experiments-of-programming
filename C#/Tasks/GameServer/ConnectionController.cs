@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace GameServer
 {
 	public class ConnectionController
 	{
 		public String Status { get; private set; }
+		private Context context;
 
 		public ConnectionController()
 		{
@@ -26,20 +28,33 @@ namespace GameServer
 			TcpListener server = new TcpListener(IPAddress.Parse("127.0.0.1"), 8089);
 			server.Start();
 
+			// Create game contex, one for all connected users
+			context = new Context();
+
 			int counter = 0;
 			while (true)
 			{
 				Socket socket = server.AcceptSocket();
 
 				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("Client connected: ", socket.LocalEndPoint);
+				Console.WriteLine("Client connected: sending data");
 				Console.ResetColor();
 
 				Client client = new Client("Client " + counter++, socket);
-				clients.Add(client);
-				ThreadPool.QueueUserWorkItem( client.RunProcessing );
 				
 
+				// Send to client game context
+				NetworkStream stream = new NetworkStream(client.Socket);
+				BinaryFormatter bf = new BinaryFormatter();
+				bf.Serialize(stream, context.Cards);
+
+				Console.ForegroundColor = ConsoleColor.Red;
+				Console.WriteLine("successful", socket.LocalEndPoint);
+				Console.ResetColor();
+				
+
+				clients.Add(client);
+				ThreadPool.QueueUserWorkItem( client.RunProcessing );
 			}
 			
 		}

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using GameDomain;
 
 namespace Cards
 {
@@ -50,6 +52,13 @@ namespace Cards
 			{
 				return "No connected";
 			}
+		}
+
+		public CardInfo[] GetCards()
+		{
+			NetworkStream stream = new NetworkStream(socket);
+			BinaryFormatter bf = new BinaryFormatter();
+			return (CardInfo[])bf.Deserialize(stream);
 		}
 
 		public void Connect() {

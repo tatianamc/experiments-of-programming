@@ -41,7 +41,7 @@ namespace Cards
 			}
 		}
 
-		public void Send(String message)
+		public void Send(Message message)
 		{
 			if (socket != null)
 			{
@@ -52,7 +52,7 @@ namespace Cards
 				return Encoding.UTF8.GetString(answer);*/
 				NetworkStream stream = new NetworkStream(socket);
 				BinaryFormatter bf = new BinaryFormatter();
-				bf.Serialize(stream,new Message("info",message));
+				bf.Serialize(stream,message);
 			} 
 		}
 
@@ -61,17 +61,25 @@ namespace Cards
 
 		private void ServerListener()
 		{
-
+			bool isError = false;
 			// TODO add end of listening
-			while (true)
+			while (!isError)
 			{
 				NetworkStream stream = new NetworkStream(socket);
 				BinaryFormatter bf = new BinaryFormatter();
-				Message msg = (Message)bf.Deserialize(stream);
-
-				if (ServerActionEvent != null)
+				try
 				{
-					ServerActionEvent(msg);
+					Message msg = (Message)bf.Deserialize(stream);
+
+					if (ServerActionEvent != null)
+					{
+						ServerActionEvent(msg);
+					}
+				} 
+				// TODO catch other type exception
+				catch (Exception ex)
+				{
+					isError = true;
 				}
 			}
 		}

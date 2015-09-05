@@ -32,7 +32,8 @@ namespace Cards
 
 		void c_ClickEvent( Place obj )
 		{
-			if(activePlace!=null) {
+			if (activePlace != null)
+			{
 
 				if (activePlace == obj)
 				{
@@ -42,16 +43,12 @@ namespace Cards
 				{
 					if (obj.Card == null)
 					{
-						obj.Card = activePlace.Card;
 
 						if (network != null)
 						{
-							network.Send(String.Format("Card moved from place {0} to {1}", activePlace.Id, obj.Id));
+							network.Send(new GameDomain.Message("move", new MoveCard(activePlace.Id, obj.Id)));
+							//network.Send(String.Format("Card moved from place {0} to {1}", , ));
 						}
-
-						activePlace.Card = null;
-						activePlace.IsSelected = false;
-						activePlace = null;
 
 					} else
 					{
@@ -59,7 +56,8 @@ namespace Cards
 					}
 				}
 
-			} else {
+			} else
+			{
 
 				if (obj.Card != null)
 				{
@@ -95,7 +93,7 @@ namespace Cards
 		Network network;
 		private void btn_connect_Click( object sender, EventArgs e )
 		{
-			network = new Network( IPAddress.Parse(tb_ip.Text), int.Parse(tb_port.Text));
+			network = new Network(IPAddress.Parse(tb_ip.Text), int.Parse(tb_port.Text));
 			network.ServerActionEvent += network_ServerActionEvent;
 
 			try
@@ -150,9 +148,29 @@ namespace Cards
 						}
 					}
 
-			
+
 					break;
 				case "move":
+
+
+					MoveCard move = obj.Data as MoveCard;
+					if (move != null)
+					{
+						places[move.MoveTo].Card = places[move.MoveFrom].Card;
+						places[move.MoveFrom].Card = null;
+					}
+
+
+					if (activePlace != null)
+					{
+						//	if (places[activePlace.Id] != null)
+						//	{
+						//		activePlace.Card = null;
+						activePlace.IsSelected = false;
+						activePlace = null;
+						//	}
+					}
+
 					break;
 			}
 

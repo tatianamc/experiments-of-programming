@@ -20,8 +20,6 @@ namespace GameServer
 			Status = "Not running";
 		}
 
-		List<Client> clients = new List<Client>();
-
 		public void Run()
 		{
 			Status = "Running. Available for connection.";
@@ -40,7 +38,7 @@ namespace GameServer
 				Console.WriteLine("Client connected: sending data");
 				Console.ResetColor();
 
-				Client client = new Client("Client " + counter++, socket);
+				Client client = new Client("Client " + counter++, socket, context);
 
 				BinaryFormatter bf = new BinaryFormatter();
 				bf.Serialize(client.stream, new GameDomain.Message("data", context.Cards));
@@ -49,7 +47,7 @@ namespace GameServer
 				Console.WriteLine("successful", socket.LocalEndPoint);
 				Console.ResetColor();
 
-				clients.Add(client);
+				context.Clients.Add(client);
 				ThreadPool.QueueUserWorkItem( client.RunProcessing );
 			}
 			

@@ -11,9 +11,12 @@ namespace GameServer
 	public class Context
 	{
 		public CardInfo[] Cards { get; private set; }
+		public List<Client> Clients { get; private set; } 
 
 		public Context()
 		{
+			Clients = new List<Client>();
+
 			Cards = new CardInfo[14];
 
 			Random r = new Random();

@@ -14,14 +14,16 @@ namespace GameServer
 	{
 		private Socket socket;
 		public NetworkStream stream;
+		private Context context;
 		
 		public String Name { get; set; }
 
-		public Client( String name, Socket socket)
+		public Client( String name, Socket socket, Context context)
 		{
 			Name = name;
 			this.socket = socket;
 			this.stream = new NetworkStream(socket,true);
+			this.context = context;
 		}
 
 		public void SendEventToClient(Message msg)
@@ -42,15 +44,32 @@ namespace GameServer
 				{
 					BinaryFormatter bf = new BinaryFormatter();
 
-					
-
 					Message msg = (Message)bf.Deserialize(stream);
-					if (msg.Data is String)
-					{	
-						Console.ForegroundColor = ConsoleColor.Yellow;
-						Console.WriteLine(">>>" + Name + " " + msg.Action+":"+ msg.Data + "<<<");
-						Console.ResetColor();
+
+					// TODO дополнительная проверка на возможность данного действия 
+					if(msg.Action.Equals("move")) {
+						MoveCard move = msg.Data as MoveCard;
+						if (move != null)
+						{
+
+							// TODO добавить проверку
+							context.Cards[move.MoveTo] = context.Cards[move.MoveFrom];
+							context.Cards[move.MoveFrom] = null;
+
+							foreach (Client c in context.Clients)
+							{
+								c.SendEventToClient(msg);
+							}
+
+						}
 					}
+
+					//if (msg.Data is String)
+					//{	
+					//	Console.ForegroundColor = ConsoleColor.Yellow;
+					//	Console.WriteLine(">>>" + Name + " " + msg.Action+":"+ msg.Data + "<<<");
+					//	Console.ResetColor();
+					//}
 				
 				} catch (Exception)
 				{

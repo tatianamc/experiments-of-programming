@@ -23,7 +23,7 @@ namespace GameServer
 		public void Run()
 		{
 			Status = "Running. Available for connection.";
-			TcpListener server = new TcpListener(IPAddress.Parse("127.0.0.1"), 8089);
+			TcpListener server = new TcpListener(IPAddress.Any, 8089);
 			server.Start();
 
 			// Create game contex, one for all connected users

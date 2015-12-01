@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Order</title>
+    <style>
+        body {
+            color: #5ce109;
+            font-family: monospace;
+        }
+        
+        #volume {
+            width: 50px;
+        }
+        
+        a {
+            color: #5ce109;
+        }
+        
+        .player {
+            background-color: black;
+            height: 80px;
+            width: 320px;
+            vertical-align: middle;
+            padding: 5px;
+        }
+        
+        #progress {
+            padding: 2px;
+            border: 1px solid  #5ce109;
+            width: 315px;
+            display: inline-block;
+            cursor: pointer;
+        }
+        
+        section {
+            width: 1024px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="player">
+        Text Player by <a href="http://nesterenya.com" target="_blank">@nesterione</a>
+        <br>
+        <br>
+        <audio id="audio" loop>
+            <source src="Night_Time_Storm-Natboy-1603862702.mp3">
+        </audio>
+        <a href="javascript:play()">[play]</a>
+        <a href="javascript:pause()">[pause]</a> &nbsp;&nbsp;&nbsp; volume <a href="javascript:volumeDown()">[-]</a>[<span id="volume"></span>]<a href="javascript:volumeUp()">[+]</a>
+        <br>
+        <br> 
+        <div id="progress" onclick="move(event)"></div>
+
+    </div>
+</body>
+
+<script type="text/javascript">
+    var mAudio = document.getElementById("audio");
+    var volume = document.getElementById("volume");
+
+    function updateVolume() {
+        var v = ""
+        var mx = 10;
+        for (var i = 0; i < mAudio.volume * 10; i++) {
+            v += "|";
+            mx--;
+        }
+        while (mx > 0) {
+            v += ".";
+            mx--;
+        }
+
+        volume.innerHTML = v;
+    }
+
+    updateVolume();
+
+    var MAX_PROGRESS = 45;
+    mAudio.addEventListener('timeupdate', function () {
+        var percent = Math.floor((MAX_PROGRESS / mAudio.duration) * mAudio.currentTime);
+        updateProgress(percent);
+        
+    }, false);
+
+    var progress = document.getElementById("progress");
+    
+    
+    progress.innerHTML = "|";
+    function updateProgress(value) {
+        console.log(value, progress.innerHTML.length);
+        
+        if(progress.innerHTML.length > value) {
+            progress.innerHTML = "|";
+        }
+        
+        for(var i = progress.innerHTML.length; i<value; i++) {
+            progress.innerHTML+="|";
+        }
+    }
+    
+    function move(e) {
+       
+        var posx = 0;
+        var posy = 0;
+        if (!e) var e = window.event;
+        if (e.pageX || e.pageY)
+        {
+            posx = e.pageX;
+            posy = e.pageY;
+        }
+        else if (e.clientX || e.clientY)
+        {
+            posx = e.clientX;
+            posy = e.clientY;
+        }
+        
+        var offsetX = 15;
+        var len = 315;
+        posx -=offsetX;
+        
+        var part = Math.floor((MAX_PROGRESS / len) * posx);
+       
+        
+        
+        mAudio.currentTime =  (mAudio.duration / MAX_PROGRESS) * part;
+        
+        updateProgress(part);
+    }
+    
+    function play() {
+        mAudio.play();
+    }
+
+    function pause() {
+        mAudio.pause();
+    }
+
+    var VOLUME_STEP = 0.1;
+
+    function volumeUp() {
+        mAudio.volume += VOLUME_STEP;
+        updateVolume();
+    }
+
+    function volumeDown() {
+        mAudio.volume -= VOLUME_STEP;
+        updateVolume();
+    }
+</script>
+
+</html>

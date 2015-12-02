@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Order</title>
+<style>
+
+    section {
+        width: 1024px;
+        margin: 0 auto;
+    }
+    
+
+</style>
+</head>
+<body>
+<section>
+  <p>Флаг Российской Федерации</p>
+  <canvas id="canvasOne"  width="500" height="300">
+  	
+  </canvas>
+
+  <p>Флаг Швейцарии</p>
+    <canvas id="canvasTwo" width="500" height="300">
+  	
+  </canvas>
+</section>
+</body>
+<script type="text/javascript">
+	
+	var c1 = document.getElementById('canvasOne').getContext('2d');
+	
+	c1.fillStyle="#FFFFFF";
+	c1.fillRect(0,0,500,100);
+    c1.fillStyle="#0000FF";
+	c1.fillRect(0,100,500,100);
+    c1.fillStyle="#FF0000";
+	c1.fillRect(0,200,500,100);
+
+    c1.rect(0,0,500,300);
+	c1.stroke();
+
+
+	var c2 = document.getElementById('canvasTwo').getContext('2d');
+    c2.fillStyle="#FF0000";
+	c2.fillRect(0,0,500,300);
+    
+    c2.fillStyle="#FFFFFF";
+	c2.fillRect(150,110,200,80);
+    c2.fillRect(210,50,80,200);
+    
+    
+    c2.stroke();
+    
+</script>
+</html>

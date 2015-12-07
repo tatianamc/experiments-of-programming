@@ -1,0 +1,6 @@
+.vs
+packages
+*.mdf
+*.ldf
+bin
+obj

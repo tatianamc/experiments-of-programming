@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div ng-controller="MainCntl" ng-init="init()">
+    <h2>Билеты <a href="#" style="font-size:14px;">[Добавить]</a></h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table" id="table">
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Name</td>
+                        <td>Number</td>
+                        <td> </td>
+                    </tr>
+                </thead>
+                <tr ng-repeat="ticket in tickets">
+                    <td>{{ticket.Id}}</td>
+                    <td>{{ticket.Name}}</td>
+                    <td>{{ticket.Number}}</td>
+                    <td>
+                        <a href="#" ng-click="ticket.Id">подробно</a>
+                        <a href="#">изменить</a>
+                        <a href="#">удалить</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <p>id</p>
+            <input type="text" ng-model="ticket.Id"/>
+            <p>name</p>
+            <input type="text" ng-model="ticket.Name"/>
+            <p>number</p>
+            <input type="text" ng-model="ticket.Number" />
+            <input type="button" ng-click="add(ticket)" />
+        </div>
+    </div>
+</div>
+<script>
+
+    //$(function () {
+    //    var jqxhr = $.get(" http://localhost:58952/Home/All", function (data) {
+    //        console.log(data);
+    //    }).fail(function() {
+    //        alert( "error" );
+    //    });
+    //});
+
+</script>

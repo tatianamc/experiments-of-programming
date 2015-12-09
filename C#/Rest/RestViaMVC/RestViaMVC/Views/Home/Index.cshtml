@@ -1,11 +1,10 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div ng-controller="MainCntl" ng-init="init()">
-    <h2>Билеты <a href="#" style="font-size:14px;">[Добавить]</a></h2>
+    <h2>Билеты <a href="#" style="font-size:14px;" ng-click="enableAddMode()">[Добавить]</a></h2>
 
     <div class="row">
         <div class="col-md-8">
@@ -23,32 +22,26 @@
                     <td>{{ticket.Name}}</td>
                     <td>{{ticket.Number}}</td>
                     <td>
-                        <a href="#" ng-click="ticket.Id">подробно</a>
-                        <a href="#">изменить</a>
-                        <a href="#">удалить</a>
+                        <a href="#" ng-click="details(ticket)">подробно</a>
+                        <a href="#" ng-click="enableUpdateMode(ticket)">изменить</a>
+                        <a href="#" ng-click="remove(ticket)">удалить</a>
                     </td>
                 </tr>
             </table>
         </div>
         <div class="col-md-4">
             <p>id</p>
-            <input type="text" ng-model="ticket.Id"/>
+            <input class="form-control" ng-disabled="isViewMode" type="text" ng-model="ticket.Id"/>
             <p>name</p>
-            <input type="text" ng-model="ticket.Name"/>
+            <input class="form-control" ng-disabled="isViewMode" type="text" ng-model="ticket.Name"/>
             <p>number</p>
-            <input type="text" ng-model="ticket.Number" />
-            <input type="button" ng-click="add(ticket)" />
+            <input class="form-control" ng-disabled="isViewMode" type="text" ng-model="ticket.Number" />
+            <br />
+            <input class="btn btn-default form-control" type="button" value="Добавить" ng-hide="!isAdding" ng-click="add(ticket)" />
+            <br />
+            <input class="btn btn-default form-control" type="button" value="Обновить" ng-hide="!isEditing" ng-click="update(ticket)" />
+            <br />
+            <input class="btn btn-default form-control" type="button" value="Отмена" ng-hide="isViewMode" ng-click="enableViewMode()" />
         </div>
     </div>
 </div>
-<script>
-
-    //$(function () {
-    //    var jqxhr = $.get(" http://localhost:58952/Home/All", function (data) {
-    //        console.log(data);
-    //    }).fail(function() {
-    //        alert( "error" );
-    //    });
-    //});
-
-</script>
